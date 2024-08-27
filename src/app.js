@@ -1,45 +1,24 @@
 import express from "express";
+import conectaNoBanco from "./config/dbConnect.js";
+import entidade from "./models/entidade.js";
+
+const conexao = await conectaNoBanco();
+conexao.on("error", (erro) => {
+  console.error("erro de conexao", erro);
+});
+
+conexao.once("open", () => {
+  console.log("conexao com o banco feita com sucesso");
+});
 
 const app = express();
 app.use(express.json()); //Middleware: toda requisicao vai passar por aqui e ser convertido para json
-
-const entidades = [
-  {
-    id: 1,
-    razaoSocial: "Igreja Cristo Rei",
-    cidade: "Ribeirao Preto",
-    estado: "SP",
-    endereco: "R. Arnaldo Victaliano",
-    numero: 1237,
-    bairro: "Pres. Medici",
-    cep: 14091313,
-  },
-
-  {
-    id: 2,
-    razaoSocial: "Igreja Cristo Rei",
-    cidade: "Ribeirao Preto",
-    estado: "SP",
-    endereco: "Av. Pres. Castelo Branco",
-    numero: 777,
-    bairro: "Lagoinha",
-    cep: 14095020,
-  },
-];
-
-function buscaEntidade(id) {
-  return entidades.findIndex((entidade) => {
-    return entidade.id === Number(id);
-  });
-}
 
 app.get("/", (req, res) => {
   res.status(200).send("Curso de Node.js");
 });
 
-app.get("/entidades", (req, res) => {
-  res.status(200).json(entidades); //convertendo a resposta para retornar um json
-});
+app.get("/entidades", async (req, res) => {});
 
 app.get("/entidades/:id", (req, res) => {
   // : informa que o parametro que estou chamando de ID é variavel
@@ -72,8 +51,14 @@ app.put("/entidades/:id", (req, res) => {
   if (req.body.numero !== undefined) entidade.numero = req.body.numero;
   if (req.body.bairro !== undefined) entidade.bairro = req.body.bairro;
   if (req.body.cep !== undefined) entidade.cep = req.body.cep;
-
+  //validações para atualizar somente os campos preenchidos
   res.status(200).json(entidade);
+});
+
+app.delete("/entidades/:id", (req, res) => {
+  const index = buscaEntidade(req.params.id);
+  entidades.splice(index, 1);
+  res.status(200).send("Entidade removida com sucesso");
 });
 
 export default app;

@@ -8,7 +8,7 @@ const routes = express.Router();
 routes.get("/user/:id", checkToken, UserController.verificaUsuarioExiste);
 
 //registro usuario
-routes.post("/auth/register", UserController.cadastrarUsuario);
+routes.post("/auth/register",  UserController.cadastrarUsuario);
 
 //Login Usuario
 routes.post("/auth/login", UserController.loginUsuario);

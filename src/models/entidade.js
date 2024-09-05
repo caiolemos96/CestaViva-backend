@@ -3,16 +3,23 @@ import mongoose from "mongoose";
 const entidadeSchema = new mongoose.Schema(
   {
     id: { type: mongoose.Schema.Types.ObjectId },
-    cnpj: { type: Number },
-    razaoSocial: { type: String },
-    nomeFantasia: { type: String },
-    cidade: { type: String },
-    estado: { type: String },
-    endereco: { type: String },
-    numero: { type: Number },
-    bairro: { type: String },
-    cep: { type: Number },
-    telefone: { type: Number },
+    cnpj: { type: Number, required: true, unique: true },
+    razaoSocial: { type: String, required: true },
+    nomeFantasia: { type: String, required: true },
+    cidade: { type: String, required: true },
+    estado: { type: String, required: true },
+    endereco: { type: String, required: true },
+    numero: { type: Number, required: true },
+    bairro: { type: String, required: true },
+    cep: { type: Number, required: true },
+    telefone: { type: Number, required: true },
+    usuarios: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users",
+        required: true,
+      },
+    ],
   },
   { versionKey: false }
 );

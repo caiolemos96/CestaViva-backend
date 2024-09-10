@@ -1,55 +1,53 @@
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-
+import entidade from "../models/entidade.js";
 class UserController {
   static async cadastrarUsuario(req, res) {
-    const { nome, email, senha, confirmsenha } = req.body;
-
-    //validações
-    if (!nome) {
-      return res.status(422).json({ msg: "O nome é obrigatorio" });
-    }
-
-    if (!email) {
-      return res.status(422).json({ msg: "O email é obrigatorio" });
-    }
-
-    if (!senha) {
-      return res.status(422).json({ msg: "A senha é obrigatoria" });
-    }
-
-    if (senha !== confirmsenha) {
-      return res.status(422).json({ msg: "As senhas não conferem" });
-    }
-
-    //Verifica se usuario existe
-    const userExiste = await User.findOne({ email: email });
-
-    if (userExiste) {
-      return res.status(422).json({ msg: "EMAIL_NAO_EXISTE " });
-    }
-
-    //criar senha
-
-    const salt = await bcrypt.genSalt(12);
-    const senhaHash = await bcrypt.hash(senha, salt);
-
-    //criar usuario
-
-    const user = new User({
-      nome,
-      email,
-      senha: senhaHash,
-    });
-
     try {
+      const idUsuarioLogado = req.userId;
+      const acharEntidade = await entidade.findOne({
+        usuarios: { $in: [idUsuarioLogado] },
+      }); //verifica e acha a entidade que o usuario logado pertence 
+
+      const { nome, email, senha } = req.body;
+
+      //Verifica se usuario existe
+      const userExiste = await User.findOne({ email: email });
+
+      if (userExiste) {
+        return res
+          .status(422)
+          .json({ msg: "Email ja cadastrado, utilize outro " });
+      }
+
+      //criar senha
+
+      const salt = await bcrypt.genSalt(12);
+      const senhaHash = await bcrypt.hash(senha, salt);
+
+      //criar usuario
+
+      const user = new User({
+        nome,
+        email,
+        senha: senhaHash,
+      });
+
       await user.save();
-      res.status(201).send("Usuario criado com sucesso!");
+      await entidade.findByIdAndUpdate(acharEntidade._id, {
+        $push: { usuarios: user._id },
+      });
+
+      return res
+        .status(201)
+        .json({ msg: "Usuário criado com sucesso e adicionado à entidade!" });
     } catch (error) {
       res.status(500).json({ msg: `o seguinte erro ocorreu: ${error}` });
     }
   }
+
+  //-------------------------------------------------------------------------------------------------------------
 
   static async loginUsuario(req, res) {
     const { email, senha } = req.body;

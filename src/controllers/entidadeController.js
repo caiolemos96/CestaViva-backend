@@ -1,5 +1,7 @@
 import entidade from "../models/entidade.js";
 import User from "../models/User.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 class EntidadeController {
   static async listarEntidades(req, res) {
@@ -40,8 +42,20 @@ class EntidadeController {
         });
       }
 
+      //Verificar se Usuario ja existe pelo Email
+      const usuarioExistente = await User.findOne({ email: usuario.email });
+      if (usuarioExistente) {
+        return res.status(400).json({
+          message: "Ja existe um usuario cadastrado com este Email",
+        });
+      }
+
+      //criando a senha
+      const salt = await bcrypt.genSalt(12);
+      const senhaHash = await bcrypt.hash(usuario.senha, salt);
+
       // Criar o usuário
-      const usuarioCriado = await User.create(usuario);
+      const usuarioCriado = await User.create({ ...usuario, senha: senhaHash });
 
       // Criar a entidade com o ID do usuário criado
       const novaEntidade = await entidade.create({
@@ -76,7 +90,7 @@ class EntidadeController {
   static async excluirEntidadePorId(req, res) {
     try {
       const id = req.params.id;
-      await entidade.deleteOne({_id: id});
+      await entidade.deleteOne({ _id: id });
       res.status(200).json({ message: "Cadastro excluido com sucesso!" });
     } catch (erro) {
       res.status(500).json({
@@ -84,44 +98,6 @@ class EntidadeController {
       });
     }
   }
-
-  static async cadastrarUsuario(req, res) {
-    try {
-      const id = req.params.id;
-      const { usuario, ...entidadeData } = req.body;
-
-      // Verificar se a entidade já existe pelo CNPJ
-      const entidadeExistente = await entidade.findOne({
-        cnpj: entidadeData.cnpj,
-      });
-      if (entidadeExistente) {
-        return res.status(400).json({
-          message: "Entidade já cadastrada com este CNPJ",
-          entidade: entidadeExistente,
-        });
-      }
-
-      // Criar o usuário
-      const usuarioCriado = await User.create(usuario);
-
-      // Criar a entidade com o ID do usuário criado
-      const novaEntidade = await entidade.create({
-        ...entidadeData,
-        usuarios: [usuarioCriado._id],
-      });
-
-      res.status(201).json({
-        message: "Entidade e usuário cadastrados com sucesso",
-        entidade: novaEntidade,
-        usuario: usuarioCriado,
-      });
-    } catch (erro) {
-      res.status(500).json({
-        message: `${erro.message} - falha ao cadastrar entidade e usuário`,
-      });
-    }
-  }
-
 }
 
 export default EntidadeController;

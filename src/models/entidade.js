@@ -20,6 +20,13 @@ const entidadeSchema = new mongoose.Schema(
         required: true,
       },
     ],
+    cestas: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users",
+        required: true,
+      },
+    ],
   },
   { versionKey: false }
 );

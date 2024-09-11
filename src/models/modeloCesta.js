@@ -12,6 +12,6 @@ const cestaModeloSchema = new mongoose.Schema(
   { versionKey: false }
 );
 
-const Cesta = mongoose.model("cestas", userSchema); //colecao referente ao banco e schema
+const cesta = mongoose.model("cestas", cestaModeloSchema); //colecao referente ao banco e schema
 
-export default Cesta;
+export default cesta;

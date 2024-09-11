@@ -4,7 +4,7 @@ import checkToken from "../middlewares/authToken.js";
 
 const routes = express.Router();
 
-//rota privada teste
+//Rotas privadas
 routes.get("/user/:id", checkToken, UserController.verificaUsuarioExiste);
 
 //Login Usuario

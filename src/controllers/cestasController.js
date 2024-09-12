@@ -8,32 +8,15 @@ class CestaController {
         usuarios: { $in: [idUsuarioLogado] },
       }); //verifica e acha a entidade que o usuario logado pertence
 
-      const {
-        nomeProduto,
-        quantidadeProduto,
-        unidadeMedida,
-        nomeCampanha,
-        comecaEm,
-        terminaEm,
-      } = req.body;
+      const { nomeCampanha, comecaEm, terminaEm } = req.body;
 
-      //Criar Cesta
-
-      const cesta = new Cesta({
-        nomeProduto,
-        quantidadeProduto,
-        unidadeMedida,
+      const cesta = await Cesta.create({
+        entidade: acharEntidade._id,
         nomeCampanha,
         comecaEm,
         terminaEm,
       });
-
-      await cesta.save();
-      await entidade.findByIdAndUpdate(acharEntidade._id, {
-        $push: { cestas: cesta._id },
-      });
-
-      return res.status(201).json({ msg: "Cesta cadastrada com sucesso" });
+      return res.status(201).json({ msg: "Cesta criada com sucesso" });
     } catch (error) {
       res.status(500).json({ msg: `o seguinte erro ocorreu: ${error}` });
     }

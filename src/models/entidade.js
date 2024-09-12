@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 
 const entidadeSchema = new mongoose.Schema(
   {
-    id: { type: mongoose.Schema.Types.ObjectId },
     cnpj: { type: Number, required: true, unique: true },
     razaoSocial: { type: String, required: true },
     nomeFantasia: { type: String, required: true },
@@ -14,13 +13,6 @@ const entidadeSchema = new mongoose.Schema(
     cep: { type: Number, required: true },
     telefone: { type: Number, required: true },
     usuarios: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "users",
-        required: true,
-      },
-    ],
-    cestas: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "users",

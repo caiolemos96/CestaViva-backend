@@ -2,12 +2,14 @@ import mongoose from "mongoose";
 
 const cestaModeloSchema = new mongoose.Schema(
   {
-    nomeProduto: { type: String, required: true },
-    quantidadeProduto: { type: String, required: true, unique: true },
-    unidadeMedida: { type: String, required: true },
+    entidade: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "entidades",
+      required: true,
+    },
     nomeCampanha: { type: String, required: true },
-    comecaEm: { type: String, required: true },
-    terminaEm: { type: String, required: true },
+    comecaEm: { type: Date, required: true },
+    terminaEm: { type: Date, required: true },
   },
   { versionKey: false }
 );

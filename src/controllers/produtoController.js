@@ -18,7 +18,7 @@ class ProdutoController {
       }
 
       // Extrai os dados do produto e o ID da cesta do corpo da requisição
-      const { nomeProduto, quantidadeProduto, unidadeMedida, cestaId } =
+      const { nomeProduto, metaProduto, quantidadeRecebida, unidadeMedida, cestaId } =
         req.body;
 
       // Verifica se o ID da cesta foi passado
@@ -36,7 +36,8 @@ class ProdutoController {
       const produto = await produtoModelo.create({
         cestaId,
         nomeProduto,
-        quantidadeProduto,
+        metaProduto,
+        quantidadeRecebida,
         unidadeMedida,
       });
 

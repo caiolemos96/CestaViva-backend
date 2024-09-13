@@ -3,10 +3,12 @@ import Cesta from "../models/modeloCesta.js";
 class CestaController {
   static async cadastrarModeloCesta(req, res) {
     try {
+      //Comportamento padrao de rota privada: Pegar o ID do usuario logado
       const idUsuarioLogado = req.userId;
+      //e achar a entidade que esse usuario logado pertence
       const acharEntidade = await entidade.findOne({
         usuarios: { $in: [idUsuarioLogado] },
-      }); //verifica e acha a entidade que o usuario logado pertence
+      });
 
       const { nomeCampanha, comecaEm, terminaEm } = req.body;
 
@@ -22,23 +24,66 @@ class CestaController {
     }
   }
 
-  static async retornarCesta(req, res) {
+  static async retornarCestas(req, res) {
     try {
       const idUsuarioLogado = req.userId;
       const acharEntidade = await entidade.findOne({
         usuarios: { $in: [idUsuarioLogado] },
-      }); //verifica e acha a entidade que o usuario logado pertence
-
-
-      const cesta = await Cesta.create({
-        entidade: acharEntidade._id,
-        nomeCampanha,
-        comecaEm,
-        terminaEm,
       });
-      return res.status(201).json({ msg: "Cesta criada com sucesso" });
+
+      if (!acharEntidade) {
+        return res.status(404).json({ msg: "Entidade não encontrada" });
+      }
+
+      // Buscar todas as cestas associadas à entidade
+      const cestas = await Cesta.find({ entidade: acharEntidade._id });
+
+      // Retornar as cestas encontradas
+      return res.status(200).json(cestas);
     } catch (error) {
-      res.status(500).json({ msg: `o seguinte erro ocorreu: ${error}` });
+      return res.status(500).json({ msg: `O seguinte erro ocorreu: ${error}` });
+    }
+  }
+
+  static async editarCesta(req, res) {
+    try {
+      const idUsuarioLogado = req.userId;
+      const acharEntidade = await entidade.findOne({
+        usuarios: { $in: [idUsuarioLogado] },
+      });
+      if (!acharEntidade) {
+        return res.status(404).json({ msg: "Entidade não encontrada" });
+      }
+
+      const { idCesta } = req.userId;
+      const { nomeCampanha, comecaEm, terminaEm } = req.body;
+
+      // Verifica se a cesta existe e pertence à entidade do usuário logado
+      const cesta = await Cesta.findOne({
+        _id: idCesta,
+        entidade: acharEntidade._id,
+      });
+
+      if (!cesta) {
+        return res.status(404).json({
+          msg: "Cesta não encontrada ou você não tem permissão para editá-la",
+        });
+      }
+
+      const cestaAtualizada = await Cesta.findByIdAndUpdate(
+        idCesta,
+        { nomeCampanha, comecaEm, terminaEm },
+        { new: true } // Retorna o documento atualizado
+      );
+
+      return res.status(200).json({
+        msg: "Cesta atualizada com sucesso",
+        cesta: cestaAtualizada,
+      });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ msg: `Ocorreu um erro ao editar a cesta ${error}` });
     }
   }
 }

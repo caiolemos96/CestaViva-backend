@@ -12,4 +12,11 @@ routes.post(
   produtoController.cadastrarProduto
 );
 
+routes.get(
+  "/cestas/:idCesta/produtos",
+  checkToken,
+  produtoController.cadastrarProduto
+);
+
+
 export default routes;

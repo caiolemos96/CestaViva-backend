@@ -10,11 +10,10 @@ routes.post(
   checkToken,
   CestaController.cadastrarModeloCesta
 );
-//Rotas privadas
 routes.get(
-  "/cesta",
+  "/cestas",
   checkToken,
-  CestaController.cadastrarModeloCesta
+  CestaController.retornarCestas
 );
 
 export default routes;

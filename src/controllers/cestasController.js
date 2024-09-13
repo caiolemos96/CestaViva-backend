@@ -1,5 +1,6 @@
 import entidade from "../models/entidade.js";
 import Cesta from "../models/modeloCesta.js";
+
 class CestaController {
   static async cadastrarModeloCesta(req, res) {
     try {
@@ -28,7 +29,6 @@ class CestaController {
       const acharEntidade = await entidade.findOne({
         usuarios: { $in: [idUsuarioLogado] },
       }); //verifica e acha a entidade que o usuario logado pertence
-
 
       const cesta = await Cesta.create({
         entidade: acharEntidade._id,

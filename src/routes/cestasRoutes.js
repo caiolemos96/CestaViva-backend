@@ -10,6 +10,7 @@ routes.post(
   checkToken,
   CestaController.cadastrarModeloCesta
 );
+//Rotas privadas
 routes.get(
   "/cestas",
   checkToken,

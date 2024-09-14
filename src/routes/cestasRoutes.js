@@ -5,16 +5,13 @@ import CestaController from "../controllers/cestasController.js";
 const routes = express.Router();
 
 //Rotas privadas
+//RotaOK
 routes.post(
   "/cestas/cadastrarCesta",
   checkToken,
   CestaController.cadastrarModeloCesta
 );
-//Rotas privadas
-routes.get(
-  "/cestas",
-  checkToken,
-  CestaController.retornarCestas
-);
+//Rota OK
+routes.get("/cestas", checkToken, CestaController.retornarCestas);
 
 export default routes;

@@ -1,5 +1,6 @@
 import entidade from "../models/entidade.js";
 import Cesta from "../models/modeloCesta.js";
+
 class CestaController {
   static async cadastrarModeloCesta(req, res) {
     try {
@@ -50,13 +51,8 @@ class CestaController {
       const idUsuarioLogado = req.userId;
       const acharEntidade = await entidade.findOne({
         usuarios: { $in: [idUsuarioLogado] },
-      });
-      if (!acharEntidade) {
-        return res.status(404).json({ msg: "Entidade não encontrada" });
-      }
+      }); //verifica e acha a entidade que o usuario logado pertence
 
-      const { idCesta } = req.userId;
-      const { nomeCampanha, comecaEm, terminaEm } = req.body;
 
       // Verifica se a cesta existe e pertence à entidade do usuário logado
       const cesta = await Cesta.findOne({

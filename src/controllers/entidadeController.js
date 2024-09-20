@@ -75,6 +75,21 @@ class EntidadeController {
     }
   }
 
+  static async getPerfilEntidade(req, res) {
+    try {
+      const { userId } = req; //id recebido do middleware e armazenado na requisicao
+      const entidade = await entidade.findOne({ usuarios: userId });
+      if (!entidade) {
+        return res.status(404).json({ msg: "Entidade não encontrada" });
+      }
+      return res.status(200).json(entidade);
+    } catch (erro) {
+      res.status(500).json({
+        message: `${erro.message} - falha na requição de perfil de entidade`,
+      });
+    }
+  }
+
   static async atualizarEntidadePorId(req, res) {
     try {
       const id = req.params.id;
@@ -82,7 +97,7 @@ class EntidadeController {
       res.status(200).json({ message: "Cadastro atualizado" });
     } catch (erro) {
       res.status(500).json({
-        message: `${erro.message} - falha na requisição na atualização `,
+        message: `${erro.message} - falha na requisição de atualização `,
       });
     }
   }

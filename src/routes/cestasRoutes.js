@@ -14,4 +14,6 @@ routes.post(
 //Rota OK
 routes.get("/cestas", checkToken, CestaController.retornarCestas);
 
+routes.put("/cestas/:id", checkToken, CestaController.editarCesta);
+
 export default routes;

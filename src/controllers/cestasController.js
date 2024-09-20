@@ -49,12 +49,21 @@ class CestaController {
   static async editarCesta(req, res) {
     try {
       const idUsuarioLogado = req.userId;
+
+      // Busca a entidade do usuário logado
       const acharEntidade = await entidade.findOne({
         usuarios: { $in: [idUsuarioLogado] },
-      }); //verifica e acha a entidade que o usuario logado pertence
+      });
 
+      // Verifica se a entidade foi encontrada
+      if (!acharEntidade) {
+        return res.status(404).json({ msg: "Entidade não encontrada" });
+      }
 
-      // Verifica se a cesta existe e pertence à entidade do usuário logado
+      const { idCesta } = req.params; // Pega o ID da cesta da URL
+      const { nomeCampanha, comecaEm, terminaEm } = req.body; // Pega os dados do corpo da requisição
+
+      // Verifica se a cesta existe e pertence à entidade
       const cesta = await Cesta.findOne({
         _id: idCesta,
         entidade: acharEntidade._id,
@@ -66,6 +75,7 @@ class CestaController {
         });
       }
 
+      // Atualiza a cesta
       const cestaAtualizada = await Cesta.findByIdAndUpdate(
         idCesta,
         { nomeCampanha, comecaEm, terminaEm },
@@ -79,7 +89,7 @@ class CestaController {
     } catch (error) {
       res
         .status(500)
-        .json({ msg: `Ocorreu um erro ao editar a cesta ${error}` });
+        .json({ msg: `Ocorreu um erro ao editar a cesta: ${error}` });
     }
   }
 }

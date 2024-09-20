@@ -18,8 +18,13 @@ class ProdutoController {
       }
 
       // Extrai os dados do produto e o ID da cesta do corpo da requisição
-      const { nomeProduto, metaProduto, quantidadeRecebida, unidadeMedida, cestaId } =
-        req.body;
+      const {
+        nomeProduto,
+        metaProduto,
+        quantidadeRecebida,
+        unidadeMedida,
+        cestaId,
+      } = req.body;
 
       // Verifica se o ID da cesta foi passado
       if (!cestaId) {
@@ -40,39 +45,6 @@ class ProdutoController {
         quantidadeRecebida,
         unidadeMedida,
       });
-
-
-      // Retorna sucesso com os dados do produto
-      return res.status(201).json({
-        msg: "Produto cadastrado com sucesso",
-        produto: produto,
-      });
-    } catch (erro) {
-      // Retorna o erro em caso de falha
-      return res
-        .status(500)
-        .json({ msg: `Erro ao cadastrar produto: ${erro.message}` });
-    }
-  }
-
-  static async cadastrarProduto(req, res) {
-    try {
-      // Verifica o usuário logado
-      const idUsuarioLogado = req.userId;
-
-      // Acha a entidade a qual o usuário pertence
-      const acharEntidade = await entidade.findOne({
-        usuarios: { $in: [idUsuarioLogado] },
-      });
-
-      if (!acharEntidade) {
-        return res.status(404).json({ msg: "Entidade não encontrada." });
-      }
-
-
-
-
-
 
       // Retorna sucesso com os dados do produto
       return res.status(201).json({

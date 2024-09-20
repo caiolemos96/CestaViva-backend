@@ -12,12 +12,14 @@ routes.get("/entidades/:id", EntidadeController.listarEntidadePorId);
 routes.post("/entidades", EntidadeController.cadastrarEntidade);
 
 //Rotas Privadas
-//Rota ok
+//Rota para cadastrar um usuario a mais na entidade
 routes.post(
   "/entidades/cadastrar/usuario",
   checkToken,
   UserController.cadastrarUsuario
 );
+// rotas para perfil da entidade e edição de perfil
+routes.get("/entidade", checkToken, EntidadeController.getPerfilEntidade);
 
 //Rotas em teste
 routes.put("/entidades/:id", EntidadeController.atualizarEntidadePorId);

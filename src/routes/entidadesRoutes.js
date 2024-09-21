@@ -21,6 +21,7 @@ routes.post(
 // rotas para perfil da entidade e edição de perfil
 routes.get("/entidade", checkToken, EntidadeController.getPerfilEntidade);
 
+
 //Rotas em teste
 routes.put("/entidades/:id", EntidadeController.atualizarEntidadePorId);
 

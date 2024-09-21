@@ -78,11 +78,11 @@ class EntidadeController {
   static async getPerfilEntidade(req, res) {
     try {
       const { userId } = req; //id recebido do middleware e armazenado na requisicao
-      const entidade = await entidade.findOne({ usuarios: userId });
-      if (!entidade) {
+      const entidadeEncontrada = await entidade.findOne({ usuarios: userId }); //acha a entidade em que o id pertence
+      if (!entidadeEncontrada) { //se for falso (nao houver entidade encontrada), retorna erro
         return res.status(404).json({ msg: "Entidade não encontrada" });
       }
-      return res.status(200).json(entidade);
+      return res.status(200).json(entidadeEncontrada); //caso contrario vai retornar o objeto da entidade pra renderizar no perfil
     } catch (erro) {
       res.status(500).json({
         message: `${erro.message} - falha na requição de perfil de entidade`,

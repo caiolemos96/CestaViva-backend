@@ -10,8 +10,11 @@ const entidadeSchema = new mongoose.Schema(
     endereco: { type: String, required: true },
     numero: { type: Number, required: true },
     bairro: { type: String, required: true },
+    complemento: { type: String },
     cep: { type: Number, required: true },
     telefone: { type: Number, required: true },
+    descricao: { type: String },
+    imagem: { type: String },
     usuarios: [
       {
         type: mongoose.Schema.Types.ObjectId,

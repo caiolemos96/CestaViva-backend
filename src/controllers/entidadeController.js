@@ -79,13 +79,43 @@ class EntidadeController {
     try {
       const { userId } = req; //id recebido do middleware e armazenado na requisicao
       const entidadeEncontrada = await entidade.findOne({ usuarios: userId }); //acha a entidade em que o id pertence
-      if (!entidadeEncontrada) { //se for falso (nao houver entidade encontrada), retorna erro
+      if (!entidadeEncontrada) {
+        //se for falso (nao houver entidade encontrada), retorna erro
         return res.status(404).json({ msg: "Entidade não encontrada" });
       }
       return res.status(200).json(entidadeEncontrada); //caso contrario vai retornar o objeto da entidade pra renderizar no perfil
     } catch (erro) {
       res.status(500).json({
         message: `${erro.message} - falha na requição de perfil de entidade`,
+      });
+    }
+  }
+
+  static async adicionarImagemEDescricao(req, res) {
+    try {
+      const { userId } = req; // Recebendo o id do usuário logado a partir do middleware
+      const { descricao, imagem } = req.body; // Dados a serem adicionados (imagem e descrição)
+
+      // Buscar a entidade vinculada ao usuário logado
+      const entidadeEncontrada = await entidade.findOne({ usuarios: userId });
+      if (!entidadeEncontrada) {
+        return res.status(404).json({ msg: "Entidade não encontrada" });
+      }
+
+      // Atualizar a descrição e adicionar a nova imagem ao array de imagens, se fornecidas
+      if (descricao) entidadeEncontrada.descricao = descricao;
+      if (imagem) entidadeEncontrada.imagem = imagem
+
+      // Salvar as alterações na entidade
+      await entidadeEncontrada.save();
+
+      res.status(200).json({
+        msg: "Descrição e imagem adicionadas com sucesso",
+        entidade: entidadeEncontrada,
+      });
+    } catch (erro) {
+      res.status(500).json({
+        message: `${erro.message} - Falha ao adicionar descrição e imagem`,
       });
     }
   }

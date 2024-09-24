@@ -7,8 +7,11 @@ const routes = express.Router();
 
 //Rotas Publicas
 //RotasOk
+//Rota retorna todas entidades
 routes.get("/entidades", EntidadeController.listarEntidades);
+//Rota que lista id por params
 routes.get("/entidades/:id", EntidadeController.listarEntidadePorId);
+//Rota para Cadastrar Entidade
 routes.post("/entidades", EntidadeController.cadastrarEntidade);
 
 //Rotas Privadas
@@ -18,17 +21,17 @@ routes.post(
   checkToken,
   UserController.cadastrarUsuario
 );
-// rotas para perfil da entidade e edição de perfil
+// Rota que retorna o perfil da entidade que o usuario que esta logado pertence
 routes.get("/entidade", checkToken, EntidadeController.getPerfilEntidade);
+// Rota que edita Imagem e Descricao da entidade que o usuario que esta logado pertence
 routes.post(
   "/entidade",
   checkToken,
   EntidadeController.adicionarImagemEDescricao
 );
 
-//Rotas em teste
+//Rotas em teste pode ignorar
 routes.put("/entidades/:id", EntidadeController.atualizarEntidadePorId);
-
 routes.delete("/entidades/:id", EntidadeController.excluirEntidadePorId);
 
 export default routes;

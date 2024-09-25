@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import entidade from "../models/entidade.js";
-import send from "../services/nodemailer.js"
+import send from "../services/nodemailer.js";
 class UserController {
   static async cadastrarUsuario(req, res) {
     try {
@@ -116,7 +116,7 @@ class UserController {
       await user.save(); // Salva essas informações no banco de dados
 
       // Cria um link de redefinição de senha que será enviado ao usuário
-      const resetLink = `${process.env.FRONTEND_URL}/resetar-senha/${resetToken}`;
+      const resetLink = `${process.env.FRONTEND_URL}/redefinir-senha/${resetToken}`;
 
       // Envia o email ao usuário com o link de redefinição de senha
       const subject = "Redefinição de senha";

@@ -8,14 +8,19 @@ const routes = express.Router();
 
 //rotas ok
 routes.post(
-  "/produtos/cadastrarProduto",
+  "/cestas/:cestaId/cadastrarProduto",
   checkToken,
   produtoController.cadastrarProduto
 );
-routes.get(
-  "/cestas/:idCesta/produtos",
+routes.post(
+  "/cestas/:cestaId/produtos/:produtoId/baixa",
   checkToken,
-  produtoController.cadastrarProduto
+  produtoController.darBaixaProduto
+);
+routes.get(
+  "/cestas/:cestaId/produtos",
+  checkToken,
+  produtoController.retornarProdutos
 );
 
 export default routes;

@@ -23,4 +23,10 @@ routes.get(
   produtoController.retornarProdutos
 );
 
+routes.delete(
+  "/cestas/:cestaId/produtos/:produtoId/delete",
+  checkToken,
+  produtoController.deletarProduto
+);
+
 export default routes;

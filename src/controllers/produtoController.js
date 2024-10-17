@@ -191,6 +191,67 @@ class ProdutoController {
         .json({ msg: `Erro ao dar baixa no produto: ${erro.message}` });
     }
   }
+
+  static async deletarProduto(req, res) {
+    try {
+      const idUsuarioLogado = req.userId;
+
+      // Verifica a entidade do usuário
+      const acharEntidade = await entidade.findOne({
+        usuarios: { $in: [idUsuarioLogado] },
+      });
+
+      if (!acharEntidade) {
+        return res.status(404).json({ msg: "Entidade não encontrada." });
+      }
+
+      const { cestaId, produtoId } = req.params;
+
+      // Verifica se o ID da cesta e do produto são válidos
+      if (!cestaId || !mongoose.Types.ObjectId.isValid(cestaId)) {
+        return res
+          .status(400)
+          .json({ msg: "ID da cesta inválido ou ausente." });
+      }
+      if (!produtoId || !mongoose.Types.ObjectId.isValid(produtoId)) {
+        return res
+          .status(400)
+          .json({ msg: "ID do produto inválido ou ausente." });
+      }
+
+      // Verifica se a cesta pertence à entidade
+      const cestaExistente = await cesta.findOne({
+        _id: cestaId,
+        entidade: acharEntidade._id,
+      });
+
+      if (!cestaExistente) {
+        return res.status(404).json({
+          msg: "Cesta não encontrada ou não pertence à sua entidade.",
+        });
+      }
+
+      // Verifica se o produto existe e pertence à cesta
+      const produto = await produtoModelo.findOne({
+        _id: produtoId,
+        cestaId: cestaId,
+      });
+
+      if (!produto) {
+        return res.status(404).json({ msg: "Produto não encontrado." });
+      }
+
+      // Deleta o produto
+      await produtoModelo.deleteOne({ _id: produtoId });
+
+      // Retorna sucesso
+      return res.status(200).json({ msg: "Produto deletado com sucesso." });
+    } catch (erro) {
+      return res
+        .status(500)
+        .json({ msg: `Erro ao deletar produto: ${erro.message}` });
+    }
+  }
 }
 
 export default ProdutoController;

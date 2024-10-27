@@ -1,5 +1,6 @@
 import entidade from "../models/entidade.js";
 import Cesta from "../models/modeloCesta.js";
+import produtoModelo from "../models/modeloProduto.js";
 
 class CestaController {
   static async cadastrarModeloCesta(req, res) {
@@ -19,6 +20,7 @@ class CestaController {
         comecaEm,
         terminaEm,
       });
+      111;
       return res.status(201).json({ msg: "Cesta criada com sucesso" });
     } catch (error) {
       res.status(500).json({ msg: `o seguinte erro ocorreu: ${error}` });
@@ -90,6 +92,45 @@ class CestaController {
       res
         .status(500)
         .json({ msg: `Ocorreu um erro ao editar a cesta: ${error}` });
+    }
+  }
+
+  static async deletarCesta(req, res) {
+    try {
+      const idUsuarioLogado = req.userId;
+      const acharEntidade = await entidade.findOne({
+        usuarios: { $in: [idUsuarioLogado] },
+      });
+      if (!acharEntidade) {
+        return res.status(404).json({ msg: "Entidade não encontrada" });
+      }
+
+      const { idCesta } = req.body;
+
+      const cesta = await Cesta.findOne({
+        _id: idCesta,
+        entidade: acharEntidade._id,
+      });
+
+      if (!cesta) {
+        return res.status(404).json({
+          msg: "Cesta não encontrada ou você não tem permissão para excluí-la",
+        });
+      }
+
+      // Deleta todos os produtos que possuem o ID da cesta
+      await produtoModelo.deleteMany({ cestaId: idCesta });
+
+      // Deleta a cesta em seguida
+      await Cesta.deleteOne({ _id: idCesta });
+
+      return res.status(200).json({
+        msg: "Cesta e todos os produtos associados excluídos com sucesso",
+      });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ msg: `Ocorreu um erro ao excluir a cesta: ${error}` });
     }
   }
 }

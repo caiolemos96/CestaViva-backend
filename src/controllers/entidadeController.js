@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 class EntidadeController {
   static async listarEntidades(req, res) {
     try {
-      const listaEntidades = await entidade.find({}); //find é um metodo do mongoose
+      const listaEntidades = await entidade.find({}).select("-usuarios"); //find é um metodo do mongoose e agora estou excluindo o campo usuarios do retorno
       res.status(200).json(listaEntidades); //convertendo a resposta para retornar um json
     } catch (erro) {
       res
@@ -104,7 +104,7 @@ class EntidadeController {
 
       // Atualizar a descrição e adicionar a nova imagem ao array de imagens, se fornecidas
       if (descricao) entidadeEncontrada.descricao = descricao;
-      if (imagem) entidadeEncontrada.imagem = imagem
+      if (imagem) entidadeEncontrada.imagem = imagem;
 
       // Salvar as alterações na entidade
       await entidadeEncontrada.save();

@@ -2,6 +2,7 @@ import entidade from "../models/entidade.js";
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import send from "../services/nodemailer.js";
 
 class EntidadeController {
   static async listarEntidades(req, res) {
@@ -63,6 +64,14 @@ class EntidadeController {
         usuarios: [usuarioCriado._id],
       });
 
+      try {
+        const subject = "Bem-vindo ao Cesta Viva!";
+        const body = `Olá, ${usuarioCriado.nome} Sua entidade foi cadastrada com sucesso! acesse o site www.cestaviva.com.br/login para acessar sua conta.`;
+        await send(usuarioCriado.email, subject, body);
+      } catch (error) {
+        console.error("Erro ao enviar e-mail:", error);
+      }
+
       res.status(201).json({
         message: "Entidade e usuário cadastrados com sucesso",
         entidade: novaEntidade,
@@ -104,7 +113,7 @@ class EntidadeController {
 
       // Atualizar a descrição e adicionar a nova imagem ao array de imagens, se fornecidas
       if (descricao) entidadeEncontrada.descricao = descricao;
-      if (imagem) entidadeEncontrada.imagem = imagem
+      if (imagem) entidadeEncontrada.imagem = imagem;
 
       // Salvar as alterações na entidade
       await entidadeEncontrada.save();

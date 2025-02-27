@@ -7,6 +7,7 @@ const routes = express.Router();
 
 //Apenas rota de teste
 routes.post("/send", MailController.sendMail);
+routes.post("/send-suporte", checkToken, MailController.sendMailSuporte);
 
 
 export default routes;

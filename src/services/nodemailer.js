@@ -15,13 +15,14 @@ const transporter = nodemailer.createTransport({
 });
 
 //define modelo transporte
-const send = async (to, subject, body) => {
+const send = async (to, subject, text, html) => {
   try {
     let info = await transporter.sendMail({
       from: process.env.MAIL_FROM,
       to,
       subject,
-      text: body,
+      text,
+      html,
     });
     console.log("E-mail enviado com sucesso:", info.messageId);
   } catch (error) {

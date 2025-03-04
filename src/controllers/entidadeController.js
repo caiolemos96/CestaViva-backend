@@ -3,6 +3,7 @@ import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import send from "../services/nodemailer.js";
+import { generateEmailWelcome } from "../services/emailGenerator.js";
 
 class EntidadeController {
   static async listarEntidades(req, res) {
@@ -31,47 +32,47 @@ class EntidadeController {
   static async cadastrarEntidade(req, res) {
     try {
       const { usuario, ...entidadeData } = req.body;
-
+  
       // Verificar se a entidade já existe pelo CNPJ
-      const entidadeExistente = await entidade.findOne({
-        cnpj: entidadeData.cnpj,
-      });
+      const entidadeExistente = await entidade.findOne({ cnpj: entidadeData.cnpj });
       if (entidadeExistente) {
         return res.status(400).json({
           message: "Entidade já cadastrada com este CNPJ",
           entidade: entidadeExistente,
         });
       }
-
-      //Verificar se Usuario ja existe pelo Email
+  
+      // Verificar se o usuário já existe pelo e-mail
       const usuarioExistente = await User.findOne({ email: usuario.email });
       if (usuarioExistente) {
         return res.status(400).json({
-          message: "Ja existe um usuario cadastrado com este Email",
+          message: "Já existe um usuário cadastrado com este e-mail",
         });
       }
-
-      //criando a senha
+  
+      // Criar a senha com hash
       const salt = await bcrypt.genSalt(12);
       const senhaHash = await bcrypt.hash(usuario.senha, salt);
-
+  
       // Criar o usuário
       const usuarioCriado = await User.create({ ...usuario, senha: senhaHash });
-
+  
       // Criar a entidade com o ID do usuário criado
       const novaEntidade = await entidade.create({
         ...entidadeData,
         usuarios: [usuarioCriado._id],
       });
-
+  
+      // Enviar e-mail de boas-vindas com Mailgen
       try {
         const subject = "Bem-vindo ao Cesta Viva!";
-        const body = `Olá, ${usuarioCriado.nome} Sua entidade foi cadastrada com sucesso! acesse o site www.cestaviva.com.br/login para acessar sua conta.`;
-        await send(usuarioCriado.email, subject, body);
+        const { emailBody, emailText } = generateEmailWelcome(usuarioCriado.nome);
+        
+        await send(usuarioCriado.email, subject, emailText, emailBody); // Envio de e-mail em HTML e texto puro
       } catch (error) {
         console.error("Erro ao enviar e-mail:", error);
       }
-
+  
       res.status(201).json({
         message: "Entidade e usuário cadastrados com sucesso",
         entidade: novaEntidade,

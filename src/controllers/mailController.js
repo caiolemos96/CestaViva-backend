@@ -1,5 +1,4 @@
 import User from "../models/User.js";
-import { generateEmailSuporte } from "../services/emailGenerator.js";
 import send from "../services/nodemailer.js";
 
 class MailController {
@@ -20,16 +19,10 @@ class MailController {
       const idUsuarioLogado = req.userId;
       const usuario = await User.findById(idUsuarioLogado);
       const emailUsuario = usuario.email;
-
-      // Gerando o corpo do e-mail estruturado
-      const { emailBody, emailText } = generateEmailSuporte(
-        emailUsuario,
-        imageLinks,
-        mensagem
-      );
-
+      const text = `Email do usuário: ${emailUsuario} \n Mensagem: ${mensagem}\n \n Print do erro ${imageLinks}`;
       // Enviar o e-mail
-      await send(to, subject, emailBody, emailText);
+
+      await send(to, subject, text);
 
       return res.status(201).json({ msg: "Email enviado com sucesso" });
     } catch (error) {

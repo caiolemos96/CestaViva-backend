@@ -4,6 +4,7 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import entidade from "../models/entidade.js";
 import send from "../services/nodemailer.js";
+import { generateEmailResetPass } from "../services/emailGenerator.js";
 class UserController {
   static async cadastrarUsuario(req, res) {
     try {
@@ -97,6 +98,10 @@ class UserController {
   static async solicitarRedefinicaoSenha(req, res) {
     const { email } = req.body;
 
+    if (!email) {
+      return res.status(400).json({ msg: "O e-mail é obrigatório." });
+    }
+
     try {
       // Verifica se o email existe no banco de dados
       const user = await User.findOne({ email });
@@ -106,29 +111,48 @@ class UserController {
 
       // Gera um token aleatório de 32 bytes para redefinição de senha
       const resetToken = crypto.randomBytes(32).toString("hex");
+      const tokenExpiration = Date.now() + 3600000; // Expira em 1 hora
 
-      // Define a expiração do token (por exemplo, 1 hora a partir do momento atual)
-      const tokenExpiration = Date.now() + 3600000; // 1 hora em milissegundos
-
-      // Armazena o token e a expiração no usuário
+      // Atualiza o usuário com o token e a expiração
       user.resetToken = resetToken;
       user.resetTokenExpiration = tokenExpiration;
-      await user.save(); // Salva essas informações no banco de dados
 
-      // Cria um link de redefinição de senha que será enviado ao usuário
+      await user.save();
+
+      // Cria um link de redefinição de senha
+      if (!process.env.FRONTEND_URL) {
+        console.error(
+          "FRONTEND_URL não está definido nas variáveis de ambiente."
+        );
+        return res
+          .status(500)
+          .json({ msg: "Erro na configuração do servidor." });
+      }
+
       const resetLink = `${process.env.FRONTEND_URL}/redefinir-senha/${resetToken}`;
 
-      // Envia o email ao usuário com o link de redefinição de senha
-      const subject = "Redefinição de senha";
-      const body = `Você solicitou a redefinição de senha. Clique no link para redefinir sua senha: ${resetLink}`;
-      await send(user.email, subject, body);
+      try {
+        const { emailBody, emailText } = generateEmailResetPass(
+          user.nome,
+          resetLink
+        );
+        const subject = "Redefinição de senha";
+        await send(user.email, subject, emailText, emailBody);
+      } catch (error) {
+        console.error("Erro ao enviar e-mail:", error);
+        return res
+          .status(500)
+          .json({ msg: "Erro ao enviar o e-mail de redefinição." });
+      }
 
-      //  Retorna uma mensagem informando que o email foi enviado
-      res.status(200).json({
+      return res.status(200).json({
         msg: "Um link para redefinir a senha foi enviado para o seu email.",
       });
     } catch (error) {
-      res.status(500).json({ msg: `Ocorreu um erro: ${error}` });
+      console.error("Erro interno:", error);
+      return res
+        .status(500)
+        .json({ msg: "Erro interno do servidor. Tente novamente mais tarde." });
     }
   }
 

@@ -36,35 +36,19 @@ export const generateEmailWelcome = (userName) => {
   };
 };
 
-export const generateEmailSuporte = (userEmail, imageLinks, mensagem) => {
+export const generateEmailResetPass = (userName, resetLink) => {
   const email = {
     body: {
-      name: userEmail,
+      name: userName,
       greeting: "Olá",
       signature: "Atenciosamente",
-      intro: "Você recebeu uma mensagem de suporte.",
-      table: {
-        data: [
-          {
-            item: "Mensagem",
-            description: mensagem,
-          },
-          {
-            item: "Links de Imagem",
-            description: imageLinks,
-          },
-        ],
-        columns: {
-          // Optionally, customize the column widths
-          customWidth: {
-            item: "20%",
-            description: "80%",
-          },
-          // Optionally, change column text alignment
-          customAlignment: {
-            item: "left",
-            description: "right",
-          },
+      intro: "Você solicitou a redefinição de senha.",
+      action: {
+        instructions: "Clique no botão abaixo para redefinir sua senha:",
+        button: {
+          color: "#22BC66",
+          text: "Redefinir senha",
+          link: resetLink,
         },
       },
       outro:

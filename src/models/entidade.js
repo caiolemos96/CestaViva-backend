@@ -13,6 +13,7 @@ const entidadeSchema = new mongoose.Schema(
     complemento: { type: String },
     cep: { type: Number, required: true },
     telefone: { type: Number, required: true },
+    tipoEntidade: { type: String, required: true },
     descricao: { type: String },
     imagem: { type: String },
     usuarios: [

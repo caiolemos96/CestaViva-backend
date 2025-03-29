@@ -6,29 +6,17 @@ import UserController from "../controllers/userController.js";
 const routes = express.Router();
 
 //Rotas Publicas
-//RotasOk
-//Rota retorna todas entidades
-routes.get("/entidades", EntidadeController.listarEntidades);
-//Rota que lista id por params
-routes.get("/entidades/:id", EntidadeController.listarEntidadePorId);
-//Rota para Cadastrar Entidade
-routes.post("/entidades", EntidadeController.cadastrarEntidade);
+routes.get("/entidades", EntidadeController.listarEntidades);         //Rota retorna todas entidades
+routes.get("/entidades/:id", EntidadeController.listarEntidadePorId); //Rota que lista id por params
+routes.post("/entidades", EntidadeController.cadastrarEntidade);      //Rota para Cadastrar Entidade
+routes.get("/entidades/:entidadeId/produtos", EntidadeController.listarProdutosPorEntidade);  // Listar produtos por Entidade (ID)
+
 
 //Rotas Privadas
-//Rota para cadastrar um usuario a mais na entidade
-routes.post(
-  "/entidades/cadastrar/usuario",
-  checkToken,
-  UserController.cadastrarUsuario
-);
-// Rota que retorna o perfil da entidade que o usuario que esta logado pertence
-routes.get("/entidade", checkToken, EntidadeController.getPerfilEntidade);
-// Rota que edita Imagem e Descricao da entidade que o usuario que esta logado pertence
-routes.post(
-  "/entidade",
-  checkToken,
-  EntidadeController.adicionarImagemEDescricao
-);
+routes.post("/entidades/cadastrar/usuario", checkToken, UserController.cadastrarUsuario); //Rota para cadastrar um usuario a mais na entidade
+routes.get("/entidade", checkToken, EntidadeController.getPerfilEntidade);                // Rota que retorna o perfil da entidade que o usuario que esta logado pertence
+routes.post("/entidade", checkToken, EntidadeController.adicionarImagemEDescricao);       // Rota que edita Imagem e Descricao da entidade que o usuario que esta logado pertence
+
 
 //Rotas em teste pode ignorar
 routes.put("/entidades/:id", EntidadeController.atualizarEntidadePorId);

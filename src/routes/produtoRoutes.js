@@ -18,7 +18,7 @@ routes.post(
   produtoController.darBaixaProduto
 );
 routes.get(
-  "/cestas/:cestaId/produtos",
+  "/cestas/:cestaId",
   checkToken,
   produtoController.retornarProdutos
 );

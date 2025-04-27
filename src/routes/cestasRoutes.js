@@ -16,5 +16,5 @@ routes.get("/cestas", checkToken, CestaController.retornarCestas);
 routes.delete("/cestas", checkToken, CestaController.deletarCesta);
 
 //rotas em teste
-routes.put("/cestas/:id", checkToken, CestaController.editarCesta);
+routes.put("/cestas", checkToken, CestaController.editarCesta);
 export default routes;

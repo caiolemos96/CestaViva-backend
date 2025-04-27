@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import entidade from "../models/entidade.js";
 import Cesta from "../models/modeloCesta.js";
 import produtoModelo from "../models/modeloProduto.js";
@@ -52,6 +53,8 @@ class CestaController {
     try {
       const idUsuarioLogado = req.userId;
 
+      console.log(idUsuarioLogado);
+
       // Busca a entidade do usuário logado
       const acharEntidade = await entidade.findOne({
         usuarios: { $in: [idUsuarioLogado] },
@@ -62,12 +65,13 @@ class CestaController {
         return res.status(404).json({ msg: "Entidade não encontrada" });
       }
 
-      const { idCesta } = req.params; // Pega o ID da cesta da URL
-      const { nomeCampanha, comecaEm, terminaEm } = req.body; // Pega os dados do corpo da requisição
+      const { nomeCampanha, comecaEm, terminaEm, idCesta } = req.body; // Pega os dados do corpo da requisição
+      const cestaId = new mongoose.Types.ObjectId(idCesta);
+      console.log(cestaId);
 
       // Verifica se a cesta existe e pertence à entidade
       const cesta = await Cesta.findOne({
-        _id: idCesta,
+        _id: cestaId,
         entidade: acharEntidade._id,
       });
 
@@ -79,7 +83,7 @@ class CestaController {
 
       // Atualiza a cesta
       const cestaAtualizada = await Cesta.findByIdAndUpdate(
-        idCesta,
+        cestaId,
         { nomeCampanha, comecaEm, terminaEm },
         { new: true } // Retorna o documento atualizado
       );

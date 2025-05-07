@@ -129,7 +129,7 @@ class UserController {
           .json({ msg: "Erro na configuração do servidor." });
       }
 
-      const resetLink = `${process.env.FRONTEND_URL}/redefinir-senha/${resetToken}`;
+      const resetLink = `http://cestaviva.com.br/redefinir-senha/${resetToken}`;
 
       try {
         const { emailBody, emailText } = generateEmailResetPass(
